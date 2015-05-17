@@ -21,7 +21,9 @@ public class CacheService extends Service<CacheServiceConfiguration> {
 
     private final Logger log = LoggerFactory.getLogger(getClass());
 
+private static String textFileName="";
     public static void main(String[] args) throws Exception {
+        textFileName=args[1].substring(7, 15)+"_LOG.txt";
         new CacheService().run(args);
     }
 
@@ -35,10 +37,11 @@ public class CacheService extends Service<CacheServiceConfiguration> {
             Environment environment) throws Exception {
         /** Cache APIs */
        // ConcurrentHashMap<Long, Entry> map = new ConcurrentHashMap<Long, Entry>();
-
+ String path="/tmp/"+textFileName;
+ File fi=new File(path);
         ChronicleMap<Long, Entry> map =
                 ChronicleMapBuilder.of(Long.class, Entry.class).entries(1000)
-                        .create();
+                         .createPersistedTo(fi);
         CacheInterface cache = new ChronicleMapCache(map);
         environment.addResource(new CacheResource(cache));
         log.info("Loaded resources");
